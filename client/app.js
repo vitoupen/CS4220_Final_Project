@@ -20,7 +20,8 @@ const app = new Vue({
         json_object_returned_from_find_method: {},
         result: [],
         //array for storing result object (extra-credit)
-        history: []
+        history: [],
+        namesAndId: 
         
     },
     methods: {
@@ -32,11 +33,18 @@ const app = new Vue({
         },
         searchQuery: function () {
             //Testing
-            this.result = []
-            let searchResult = {query: this.query, result: {}}
-            this.result.push('result')
-            searchResult.result = this.result
-            this.history.push(searchResult)
+            if (!(this.query && this.choice)) {
+                return
+            } else {
+                socket.emit('search', {query: this.query, choice: this.choice})
+            }
+
+
+            // this.result = []
+            // let searchResult = {query: this.query, result: {}}
+            // this.result.push('result')
+            // searchResult.result = this.result
+            // this.history.push(searchResult)
             //Send the query to the backend
         },
         find: function (id, type)
@@ -48,9 +56,7 @@ const app = new Vue({
             //It might have to get the results from a keyword search
             else
                 socket.emit('find_keyword', id)
-            
-            
-        }
+        },
     },
     components: {
         'result-component': resultComponent
@@ -60,6 +66,21 @@ const app = new Vue({
 socket.on('found', json_object => {
     app.json_object_returned_from_find_method = json_object;
 })
+
+socket.on('search-successful', result => {
+    // TODO: Implement the functionality of extracting the names of the result
+    if (app.choice != "movie") {
+        
+    } else {
+        
+    }
+    app.result = result
+})
+
+socket.on('search-failed', result => {
+    // Indicate that the usr got a bad search
+})
+
 //app.find(3986, "keyword");
 /*
  company

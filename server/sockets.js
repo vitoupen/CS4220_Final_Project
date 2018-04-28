@@ -18,6 +18,10 @@ module.exports = (server) => {
         return _fetch(`keyword/${id}/movies?api_key=${config.apiKey}&language=en-US&include_adult=false`);
     }
 
+    const search = (query, type) => {
+        return _fetch(`search/${type}?api_key=${config.apiKey}&language=en-US&query=${query}`)
+    }
+
     io.on('connection', socket => {
         socket.on('find', data => {
             find(data.type, data.id).then(result => {
@@ -28,6 +32,17 @@ module.exports = (server) => {
             findKeyword(id).then(result => {
                 io.emit('found', result)
             });
+        })
+
+        // Search on the querry
+        socket.on('search', querryObj => {
+            search(querryObj.querry, querryObj.type)
+            .then(result => {
+                io.emit('search-successful', result)
+            })
+            .catch(error => {
+                io.emit('search-unsuccessful', error)
+            })
         })
     })
 }
