@@ -36,9 +36,12 @@ module.exports = (server) => {
 
         // Search on the querry
         socket.on('search', querryObj => {
-            search(querryObj.querry, querryObj.type)
-            .then(result => {
-                io.emit('search-successful', result)
+            search(querryObj.query, querryObj.choice).then(result => {
+                if (result.results > 0) {
+                    io.emit('no-results-found', result)
+                } else {
+                    io.emit('search-successful', result)
+                }
             })
             .catch(error => {
                 io.emit('search-unsuccessful', error)
