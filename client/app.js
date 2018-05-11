@@ -1,10 +1,12 @@
+const socket = io()
 const resultComponent = {
     template: `
     <div>
     <p v-if="result.names.length">Current Results: </p>
+    {{result.ids[0]}}
         <ol>     
             <li v-for="name in result.names">
-                <span @click="find(0, choice)">
+                <span @click="find(result.ids[0], choice)">
                {{name}}
                </span>
             </li>
@@ -27,16 +29,15 @@ const resultComponent = {
     props: ['result','choice']
 }
 const detailComponent = {
-    template:`<div>
+    template:`<div v-if="json">
         {{json}}
     </div>`,
     props: ['json']
 }
-const socket = io()
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['tv'],
+        category: ['tv','movie','keyword','company','people'],
         choice: '',
         query: '',
         json_object_returned_from_find_method: {},
@@ -89,18 +90,6 @@ const app = new Vue({
             if (this.type == 'keyword') {
                 socket.emit
             }
-        },
-        find: function (id) {
-            //When given an id and type
-            //It gets the details about the item and returns the json_object
-            if (type != "keyword")
-                socket.emit('find', {
-                    id: id,
-                    type: type
-                })
-            //It might have to get the results from a keyword search
-            else
-                socket.emit('find_keyword', id)
         },
     },
     components: {
