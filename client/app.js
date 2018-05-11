@@ -3,10 +3,9 @@ const resultComponent = {
     template: `
     <div>
     <p v-if="result.names.length">Current Results: </p>
-    {{result.ids[0]}}
         <ol>     
             <li v-for="name in result.names">
-                <span @click="find(result.ids[0], choice)">
+                <span @click="find(result.ids[result.names.indexOf(name)], choice)">
                {{name}}
                </span>
             </li>
@@ -98,24 +97,30 @@ const app = new Vue({
 })
 //Sockets
 socket.on('found', json_object => {
-    displayChoices = false
     app.json_object_returned_from_find_method = json_object;
 })
 
 socket.on('search-successful', result => {
     let name = "name"
+    let tempObj = {
+        names: [],
+        ids: []
+    }
     if (app.choice == "movie") name = "title"
 
     // TODO: Implement the functionality of extracting the names of the result
     app.result = result
 
     app.result.results.forEach(element => {
-        app.nameAndIdObj.names.push(element[name])
-        app.nameAndIdObj.ids.push(element.id)
+        tempObj.names.push(element[name])
+        tempObj.ids.push(element.id)
     });
     /* console.log("\n\nNow showing the names and IDs obj")
     console.log(app.nameAndIdObj) */
 
+    // Assume the a json obj was prev attained so reassign it to an empty obj
+    app.json_object_returned_from_find_method = {}
+    app.nameAndIdObj = tempObj
     displayChoices = true
 })
 
