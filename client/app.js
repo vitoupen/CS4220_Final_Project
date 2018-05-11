@@ -1,23 +1,37 @@
-/* const resultComponent = {
-    template: `<div>
-    <p v-if="history.length">Search History</p>
-        <ol>
-            <li v-for="result in history">{{result}}</li>
-        </ol>
-    <br>
-    <p v-if="result.length">Current Result: </p>
-            <li v-for="result in result">{{result}}</li>
-    </div>`,
-    props: ['history', 'result']
-} */
 const resultComponent = {
-    template: `<div>
-    <p v-if="displayChoices">Current Result: </p>
-            <li v-for="result in nameAndIdObj.names">{{result}}</li>
+    template: `
+    <div>
+    <p v-if="result.names.length">Current Results: </p>
+        <ol>     
+            <li v-for="name in result.names">
+                <span @click="find(0, choice)">
+               {{name}}
+               </span>
+            </li>
+        </ol>
     </div>`,
-    props: ['nameAndIdObj','displayChoices']
+    methods:{
+        find: function (id, choice) {
+            //When given an id and type
+            //It gets the details about the item and returns the json_object
+            if (choice != "keyword")
+                socket.emit('find', {
+                    id: id,
+                    type: choice
+                })
+            //It might have to get the results from a keyword search
+            else
+                socket.emit('find_keyword', id)
+        }
+    },
+    props: ['result','choice']
 }
-
+const detailComponent = {
+    template:`<div>
+        {{json}}
+    </div>`,
+    props: ['json']
+}
 const socket = io()
 const app = new Vue({
     el: '#search-app',
@@ -26,7 +40,7 @@ const app = new Vue({
         choice: '',
         query: '',
         json_object_returned_from_find_method: {},
-        
+
         // The result of the search
         result: {},
 
@@ -34,7 +48,7 @@ const app = new Vue({
         // Make a comp that uses this.
         nameAndIdObj: {
             names: [],
-            ids: [] 
+            ids: []
         },
         displayChoices: false,
         answerChoice: '',
@@ -54,7 +68,10 @@ const app = new Vue({
             if (!(this.query && this.choice)) {
                 return
             } else {
-                socket.emit('search', {query: this.query, choice: this.choice})
+                socket.emit('search', {
+                    query: this.query,
+                    choice: this.choice
+                })
             }
 
 
@@ -66,30 +83,33 @@ const app = new Vue({
             //Send the query to the backend
         },
         // When usr selected the choice they want
-        selected: function() {
+        selected: function () {
             const indexOfAnswerChoice = this.namesAndIdObj.names.indexOf(this.answerChoice)
-            
+
             if (this.type == 'keyword') {
                 socket.emit
             }
         },
-        find: function (id)
-        {
+        find: function (id) {
             //When given an id and type
             //It gets the details about the item and returns the json_object
             if (type != "keyword")
-                socket.emit('find', {id: id, type: type})
+                socket.emit('find', {
+                    id: id,
+                    type: type
+                })
             //It might have to get the results from a keyword search
             else
                 socket.emit('find_keyword', id)
         },
     },
     components: {
-        'result-component': resultComponent
+        'result-component': resultComponent, 'detail-component': detailComponent
     }
 })
 //Sockets
 socket.on('found', json_object => {
+    displayChoices = false
     app.json_object_returned_from_find_method = json_object;
 })
 
@@ -104,9 +124,8 @@ socket.on('search-successful', result => {
         app.nameAndIdObj.names.push(element[name])
         app.nameAndIdObj.ids.push(element.id)
     });
-
-    console.log("\n\nNow showing the names and IDs obj")
-    console.log(app.nameAndIdObj)
+    /* console.log("\n\nNow showing the names and IDs obj")
+    console.log(app.nameAndIdObj) */
 
     displayChoices = true
 })
