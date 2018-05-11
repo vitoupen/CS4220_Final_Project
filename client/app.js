@@ -1,4 +1,4 @@
-const resultComponent = {
+/* const resultComponent = {
     template: `<div>
     <p v-if="history.length">Search History</p>
         <ol>
@@ -9,7 +9,15 @@ const resultComponent = {
             <li v-for="result in result">{{result}}</li>
     </div>`,
     props: ['history', 'result']
+} */
+const resultComponent = {
+    template: `<div>
+    <p v-if="displayChoices">Current Result: </p>
+            <li v-for="result in nameAndIdObj.names">{{result}}</li>
+    </div>`,
+    props: ['nameAndIdObj','displayChoices']
 }
+
 const socket = io()
 const app = new Vue({
     el: '#search-app',
