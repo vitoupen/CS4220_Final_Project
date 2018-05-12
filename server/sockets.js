@@ -37,14 +37,14 @@ module.exports = (server) => {
         // Search on the querry
         socket.on('search', querryObj => {
             search(querryObj.query, querryObj.choice).then(result => {
-                if (result.results > 0) {
-                    io.emit('no-results-found', result)
-                } else {
+                if (result.results) {
                     io.emit('search-successful', result)
+                } else {
+                    io.emit('no-results-found', result)
                 }
             })
             .catch(error => {
-                io.emit('search-unsuccessful', error)
+                io.emit('no-results-found', error)
             })
         })
     })

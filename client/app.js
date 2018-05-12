@@ -27,8 +27,11 @@ const resultComponent = {
     },
     props: ['result','choice']
 }
+
+// TODO: Fix showing empty obj
 const detailComponent = {
-    template:`<div v-if="json">
+    template:`
+    <div v-if="json">
         {{json}}
     </div>`,
     props: ['json']
@@ -36,7 +39,7 @@ const detailComponent = {
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['tv','movie','keyword','company','people'],
+        category: ['tv','movie','company','people'],
         choice: '',
         query: '',
         json_object_returned_from_find_method: {},
@@ -50,44 +53,20 @@ const app = new Vue({
             names: [],
             ids: []
         },
-        displayChoices: false,
-        answerChoice: '',
         //array for storing result object (extra-credit)
         history: [],
         noResults: false
     },
     methods: {
-
-        getCategory: function () {
-
-            //Need to get all the category from the backend
-
-        },
         searchQuery: function () {
-            //Testing
             if (!(this.query && this.choice)) {
                 return
             } else {
+                if (this.choice == "any") this.choice = 'keyword'
                 socket.emit('search', {
                     query: this.query,
                     choice: this.choice
                 })
-            }
-
-
-            // this.result = []
-            // let searchResult = {query: this.query, result: {}}
-            // this.result.push('result')
-            // searchResult.result = this.result
-            // this.history.push(searchResult)
-            //Send the query to the backend
-        },
-        // When usr selected the choice they want
-        selected: function () {
-            const indexOfAnswerChoice = this.namesAndIdObj.names.indexOf(this.answerChoice)
-
-            if (this.type == 'keyword') {
-                socket.emit
             }
         },
     },
@@ -101,36 +80,31 @@ socket.on('found', json_object => {
 })
 
 socket.on('search-successful', result => {
+    app.noResults = false
+
     let name = "name"
     let tempObj = {
         names: [],
         ids: []
     }
+
     if (app.choice == "movie") name = "title"
 
-    // TODO: Implement the functionality of extracting the names of the result
     app.result = result
 
     app.result.results.forEach(element => {
         tempObj.names.push(element[name])
         tempObj.ids.push(element.id)
     });
-    /* console.log("\n\nNow showing the names and IDs obj")
-    console.log(app.nameAndIdObj) */
 
     // Assume the a json obj was prev attained so reassign it to an empty obj
     app.json_object_returned_from_find_method = {}
     app.nameAndIdObj = tempObj
-    displayChoices = true
 })
 
 // Show a comp when this is true
 socket.on('no-results-found', result => {
     app.noResults = true
-})
-
-socket.on('search-failed', result => {
-    // Indicate that the usr got a bad search
 })
 
 //app.find(3986, "keyword");
