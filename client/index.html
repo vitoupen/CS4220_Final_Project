@@ -16,8 +16,8 @@
    <div id="search-app">
         <result-component v-bind:result="nameAndIdObj"v-bind:choice="choice"></result-component>
         <h2 v-if="category.length">Select a category:</h2>
-           <select  class="form-control" v-model="choice" v-on:click="getCategory">
-               <option value="">Any</option>
+           <select  class="form-control" v-model="choice">
+               <option value="any">any</option>
                <option v-for="option in category" v-bind:value="option">
                    {{option}}
                </option>
