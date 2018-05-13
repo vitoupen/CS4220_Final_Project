@@ -1,17 +1,19 @@
 const socket = io()
+
+//----Components----
 const resultComponent = {
     template: `
     <div>
-    <p v-if="result.names.length">Current Results: </p>
-        <ol>     
+        <div v-if="result.names.length"><h3> <u>Results:  </u></h3></div><br>
+        <ul>     
             <li v-for="name in result.names">
-                <span @click="find(result.ids[result.names.indexOf(name)], choice)">
-               {{name}}
-               </span>
+                <button class="btn btn-primary" @click="find(result.ids[result.names.indexOf(name)], choice)">
+                {{name}}
+                </button>
             </li>
-        </ol>
+        </ul>
     </div>`,
-    methods:{
+    methods: {
         find: function (id, choice) {
             //When given an id and type
             //It gets the details about the item and returns the json_object
@@ -25,17 +27,38 @@ const resultComponent = {
                 socket.emit('find_keyword', id)
         }
     },
-    props: ['result','choice']
+    props: ['result', 'choice']
 }
-
-// TODO: Fix showing empty obj
 const detailComponent = {
-    template:`
-    <div v-if="json">
-        {{json}}
-    </div>`,
+    template: `
+    <div v-if="json.id">
+        <div align="center">
+            <img v-if="json.poster_path":src="json.poster_path" width="200" height="200">
+            <img v-else-if="json.logo_path" :src="json.logo_path" width="200" height="200">
+            <img v-else :src="'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'" width="200" height="200">
+        </div>
+            <div>
+                <table class="table table-bordered">
+                    <tbody v-for="(value, key) in json">
+                        <tr>
+                            <td>{{key}}</td>
+                            <td v-if="Array.isArray(value)">
+                                <span v-for="arr in value">
+                                    <span v-if="arr.name">{{arr.name}}&nbsp;</span>
+                                    <span v-else>{{arr}}&nbsp;&nbsp</span>
+                                </span>
+                            </td>
+                            <td v-else-if="value instanceof Object">{{value.name}}</td>
+                            <td v-else>{{value}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`,
     props: ['json']
 }
+
+//----Vue----
 const app = new Vue({
     el: '#search-app',
     data: {
@@ -60,9 +83,8 @@ const app = new Vue({
     methods: {
         searchQuery: function () {
             if (!(this.query && this.choice)) {
-                return
+                return alert("Select a category to search")
             } else {
-                if (this.choice == "any") this.choice = 'keyword'
                 socket.emit('search', {
                     query: this.query,
                     choice: this.choice
@@ -74,11 +96,27 @@ const app = new Vue({
         'result-component': resultComponent, 'detail-component': detailComponent
     }
 })
-//Sockets
+
+//----Sockets----
 socket.on('found', json_object => {
+
+    let path =''
+
+    if(json_object.poster_path){
+        path = json_object.poster_path
+        json_object.poster_path="https://image.tmdb.org/t/p/original/"+ path
+    }
+    if(json_object.logo_path){
+        path = json_object.logo_path
+        json_object.logo_path="https://image.tmdb.org/t/p/original/"+ path
+    }
+    if(json_object.backdrop_path){
+        path = json_object.backdrop_path
+        json_object.backdrop_path ="https://image.tmdb.org/t/p/original/"+ path
+    }
+    
     app.json_object_returned_from_find_method = json_object;
 })
-
 socket.on('search-successful', result => {
     app.noResults = false
 
@@ -87,7 +125,6 @@ socket.on('search-successful', result => {
         names: [],
         ids: []
     }
-
     if (app.choice == "movie") name = "title"
 
     app.result = result
@@ -96,22 +133,12 @@ socket.on('search-successful', result => {
         tempObj.names.push(element[name])
         tempObj.ids.push(element.id)
     });
-
     // Assume the a json obj was prev attained so reassign it to an empty obj
     app.json_object_returned_from_find_method = {}
     app.nameAndIdObj = tempObj
 })
-
 // Show a comp when this is true
 socket.on('no-results-found', result => {
+    alert("No Results found in the Database.")
     app.noResults = true
 })
-
-//app.find(3986, "keyword");
-/*
- company
- keyword
- movie
- tv
- people
- */
