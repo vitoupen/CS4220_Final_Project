@@ -13,12 +13,6 @@ module.exports = (server) => {
     {
         return _fetch(`${type}/${id}?api_key=${config.apiKey}&language=en-US`);
     }
-
-    const findKeyword = (id) =>
-   {
-       return _fetch(`keyword/${id}/movies?api_key=${config.apiKey}&language=en-US&include_adult=false`);
-   }
-
     const search = (query, type) => {
         return _fetch(`search/${type}?api_key=${config.apiKey}&language=en-US&query=${query}`)
     }
@@ -29,12 +23,6 @@ module.exports = (server) => {
                 io.emit('found', result)
             });
         })
-        socket.on('find_keyword', id => {
-            findKeyword(id).then(result => {
-                io.emit('found', result)
-            });
-        })
-
         // Search on the querry
         socket.on('search', querryObj => {
             search(querryObj.query, querryObj.choice).then(result => {

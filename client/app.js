@@ -41,14 +41,11 @@ const resultComponent = {
         find: function (id, choice) {
             //When given an id and type
             //It gets the details about the item and returns the json_object
-            if (choice != "keyword") {
                 socket.emit('find', {
                     id: id,
                     type: choice
                 })
-            } else {
-                socket.emit('find_keyword', id)
-            }
+           
         }
     },
     props: ['result', 'choice']
@@ -97,7 +94,7 @@ const detailComponent = {
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['keyword','company','movie','tv','person'],
+        category: ['company','movie','tv','person'],
         choice: '',
         query: '',
         history: [],
