@@ -13,7 +13,8 @@
 </head>
 <body>
    <div id="search-app">
-       <div class="container">     
+       <div class="container">  
+           <history-component :history="history" :choice="choice"></history-component>    
             <h2 v-if="category.length">Select a category:</h2>
             <select class="form-control" v-model="choice">
                 <option v-for="option in category" :value="option">
@@ -25,8 +26,11 @@
             <br>
             <button button type="button" class="btn btn-primary btn-lg" @click="searchQuery">Search</button>
             <br>
-            <result-component :result="nameAndIdObj" :choice="choice"></result-component>
-            <detail-component :json="json_object_returned_from_find_method" :no_image="no_image"></detail-component>
+            <div class="row">
+                <result-component class="col-md-4" :result="nameAndIdObj" :choice="choice"></result-component>
+                <detail-component class="col-md-8" :json="json_object_returned_from_find_method" :no_image="no_image"></detail-component>
+            </div>
+            
            
         </div>
     </div>

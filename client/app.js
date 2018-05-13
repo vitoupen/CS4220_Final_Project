@@ -1,30 +1,53 @@
 const socket = io()
 
 //----Components----
+const historyComponent = {
+    template: `
+    <div>
+        <div v-if="history.length">
+            <h3><u>History:  </u></h3>
+            <div>
+                <a v-for="element in history" class="btn btn-link" @click="search(element.name, element.choice)">
+                    {{element.name}}
+                </a>
+            </div>
+        </div>
+    </div>`,
+    methods: {
+        search: function (name, choice) {
+            app["query"] = name
+            socket.emit('search', {
+                query: name,
+                choice: choice
+            })
+        }
+    },
+    props: ['history', 'choice']
+}
 const resultComponent = {
     template: `
     <div>
         <div v-if="result.names.length"><h3> <u>Results:  </u></h3></div><br>
-        <ul>     
+        <ol>     
             <li v-for="name in result.names">
-                <button class="btn btn-primary" @click="find(result.ids[result.names.indexOf(name)], choice)">
+                <a class="btn btn-link" @click="find(result.ids[result.names.indexOf(name)], choice)">
                 {{name}}
-                </button>
+                </a>
             </li>
-        </ul>
+        </ol>
     </div>`,
     methods: {
         find: function (id, choice) {
             //When given an id and type
             //It gets the details about the item and returns the json_object
-            if (choice != "keyword")
+            if (choice != "keyword") {
                 socket.emit('find', {
                     id: id,
                     type: choice
                 })
-            //It might have to get the results from a keyword search
-            else
+            } else {
                 socket.emit('find_keyword', id)
+            }
         }
     },
     props: ['result', 'choice']
@@ -38,6 +61,7 @@ const detailComponent = {
             <img v-else-if="json.profile_path" :src="json.profile_path" width="200" height="200">
             <img v-else :src="no_image" width="200" height="200">
         </div>
+        <br>
             <div>
                 <table class="table table-bordered">
                     <tbody v-for="(value, key) in json">
@@ -72,9 +96,10 @@ const detailComponent = {
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['company','movie','tv','person'],
+        category: ['keyword','company','movie','tv','person'],
         choice: '',
         query: '',
+        history: [],
         json_object_returned_from_find_method: {},
 
         // The result of the search
@@ -92,6 +117,17 @@ const app = new Vue({
             if (!(this.query && this.choice)) {
                 return alert("Select a category to search")
             } else {
+                // Push an element to the history if the query hasn't been added already
+                let notInHistory = true;
+                for (let index = 0; index < this.history.length && notInHistory; index++) {
+                    if (this.history[index].name == this.query) {
+                        notInHistory = false
+                    }
+                }
+                if (notInHistory) {
+                    this.history.push({name: this.query, choice: this.choice});
+                }
+                
                 socket.emit('search', {
                     query: this.query,
                     choice: this.choice
@@ -100,7 +136,8 @@ const app = new Vue({
         },
     },
     components: {
-        'result-component': resultComponent, 'detail-component': detailComponent
+        'result-component': resultComponent, 'detail-component': detailComponent, 
+        'history-component': historyComponent
     }
 })
 

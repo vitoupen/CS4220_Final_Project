@@ -13,6 +13,12 @@ module.exports = (server) => {
     {
         return _fetch(`${type}/${id}?api_key=${config.apiKey}&language=en-US`);
     }
+
+    const findKeyword = (id) =>
+   {
+       return _fetch(`keyword/${id}/movies?api_key=${config.apiKey}&language=en-US&include_adult=false`);
+   }
+
     const search = (query, type) => {
         return _fetch(`search/${type}?api_key=${config.apiKey}&language=en-US&query=${query}`)
     }
