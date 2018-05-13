@@ -35,6 +35,7 @@ const detailComponent = {
         <div align="center">
             <img v-if="json.poster_path":src="json.poster_path" width="200" height="200">
             <img v-else-if="json.logo_path" :src="json.logo_path" width="200" height="200">
+            <img v-else-if="json.profile_path" :src="json.profile_path" width="200" height="200">
             <img v-else :src="no_image" width="200" height="200">
         </div>
             <div>
@@ -71,7 +72,7 @@ const detailComponent = {
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['company','movie','tv','people'],
+        category: ['company','movie','tv','person'],
         choice: '',
         query: '',
         json_object_returned_from_find_method: {},
@@ -112,17 +113,20 @@ socket.on('found', json_object => {
 
     if(json_object.poster_path){
         path = json_object.poster_path
-        json_object.poster_path="https://image.tmdb.org/t/p/original/"+ path
+        json_object.poster_path="https://image.tmdb.org/t/p/original"+ path
     }
     if(json_object.logo_path){
         path = json_object.logo_path
-        json_object.logo_path="https://image.tmdb.org/t/p/original/"+ path
+        json_object.logo_path="https://image.tmdb.org/t/p/original"+ path
     }
     if(json_object.backdrop_path){
         path = json_object.backdrop_path
-        json_object.backdrop_path ="https://image.tmdb.org/t/p/original/"+ path
+        json_object.backdrop_path ="https://image.tmdb.org/t/p/original"+ path
     }
-    
+    if(json_object.profile_path){
+        path = json_object.profile_path
+        json_object.profile_path ="https://image.tmdb.org/t/p/original"+ path
+    }
     app.json_object_returned_from_find_method = json_object;
 })
 socket.on('search-successful', result => {
