@@ -82,10 +82,10 @@ const detailComponent = {
                             </td>
                             <td v-else-if="value instanceof Object">
                                 <table class="table table-bordered">
-                                    <tbody v-for="(value3, key3) in value">
+                                    <tbody v-for="(value, key) in value">
                                         <tr>
-                                            <td>{{key3}}</td>
-                                            <td>{{value3}}</td>
+                                            <td>{{key}}</td>
+                                            <td>{{value}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
