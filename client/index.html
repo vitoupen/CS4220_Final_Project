@@ -26,7 +26,7 @@
             <button button type="button" class="btn btn-primary btn-lg" @click="searchQuery">Search</button>
             <br>
             <result-component :result="nameAndIdObj" :choice="choice"></result-component>
-            <detail-component :json="json_object_returned_from_find_method"></detail-component>
+            <detail-component :json="json_object_returned_from_find_method" :no_image="no_image"></detail-component>
            
         </div>
     </div>

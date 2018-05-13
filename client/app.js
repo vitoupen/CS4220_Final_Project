@@ -35,7 +35,7 @@ const detailComponent = {
         <div align="center">
             <img v-if="json.poster_path":src="json.poster_path" width="200" height="200">
             <img v-else-if="json.logo_path" :src="json.logo_path" width="200" height="200">
-            <img v-else :src="'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'" width="200" height="200">
+            <img v-else :src="no_image" width="200" height="200">
         </div>
             <div>
                 <table class="table table-bordered">
@@ -44,7 +44,16 @@ const detailComponent = {
                             <td>{{key}}</td>
                             <td v-if="Array.isArray(value)">
                                 <span v-for="arr in value">
-                                    <span v-if="arr.name">{{arr.name}}&nbsp;</span>
+                                    <span v-if="arr.name">
+                                        <table class="table table-bordered">
+                                            <tbody v-for="value1 in value">
+                                                <tr v-for="(value, key) in value1">
+                                                    <td>{{key}}</td>
+                                                    <td>{{value}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </span>
                                     <span v-else>{{arr}}&nbsp;&nbsp</span>
                                 </span>
                             </td>
@@ -55,14 +64,14 @@ const detailComponent = {
                 </table>
             </div>
         </div>`,
-    props: ['json']
+    props: ['json','no_image']
 }
 
 //----Vue----
 const app = new Vue({
     el: '#search-app',
     data: {
-        category: ['tv','movie','company','people'],
+        category: ['company','movie','tv','people'],
         choice: '',
         query: '',
         json_object_returned_from_find_method: {},
@@ -76,8 +85,7 @@ const app = new Vue({
             names: [],
             ids: []
         },
-        //array for storing result object (extra-credit)
-        history: [],
+        no_image:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',
         noResults: false
     },
     methods: {
