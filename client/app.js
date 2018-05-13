@@ -80,14 +80,12 @@ const app = new Vue({
         // The result of the search
         result: {},
 
-        // Use this to show a user a list of choices to select from
-        // Make a comp that uses this.
+        // Will be used to show the user a list of choices to select from
         nameAndIdObj: {
             names: [],
             ids: []
         },
         no_image:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',
-        noResults: false
     },
     methods: {
         searchQuery: function () {
@@ -129,28 +127,42 @@ socket.on('found', json_object => {
     }
     app.json_object_returned_from_find_method = json_object;
 })
-socket.on('search-successful', result => {
-    app.noResults = false
 
-    let name = "name"
+socket.on('search-successful', result => {
+    // Declare and hook up necessary variables
+    app.result = result
+    const resultsArr = app.result.results
+    
+    // Declare a temp obj that will hold a list of names and ids.
     let tempObj = {
         names: [],
         ids: []
     }
-    if (app.choice == "movie") name = "title"
 
-    app.result = result
+    let name = "name"   // Name will be used to grab the name in the obj of interest
+    if (app.choice == "movie") name = "title"   // Name must be a movie if the user is searching for a movie
 
-    app.result.results.forEach(element => {
-        tempObj.names.push(element[name])
-        tempObj.ids.push(element.id)
-    });
+     // Create a displaySize var to display a max of 10 items to the user
+     let displaySize = resultsArr.length
+     if (displaySize > 10) {
+         displaySize = 10
+     }
+    
+    // Grab the names and ids up to a certain size from the obj's results and store them temporarily
+    for (let index = 0; index < displaySize; index++) {
+        tempObj.names.push(resultsArr[index][name])
+        tempObj.ids.push(resultsArr[index].id)
+    }
+    
     // Assume the a json obj was prev attained so reassign it to an empty obj
     app.json_object_returned_from_find_method = {}
+
+    // tempObj is filled, reassign the name and id obj to the tempObj
     app.nameAndIdObj = tempObj
 })
-// Show a comp when this is true
+
+// Alert the usr if no results were found 
 socket.on('no-results-found', result => {
-    alert("No Results found in the Database.")
-    app.noResults = true
+    console.log(result)
+    alert(`No Results were found for ${app.query}.\nPlease check your spelling and try again.`)
 })
