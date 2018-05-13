@@ -80,7 +80,16 @@ const detailComponent = {
                                     <span v-else>{{arr}}&nbsp;&nbsp</span>
                                 </span>
                             </td>
-                            <td v-else-if="value instanceof Object">{{value.name}}</td>
+                            <td v-else-if="value instanceof Object">
+                                <table class="table table-bordered">
+                                    <tbody v-for="(value3, key3) in value">
+                                        <tr>
+                                            <td>{{key3}}</td>
+                                            <td>{{value3}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
                             <td v-else>{{value}}</td>
                         </tr>
                     </tbody>
