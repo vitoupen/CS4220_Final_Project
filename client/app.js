@@ -16,6 +16,7 @@ const historyComponent = {
     methods: {
         search: function (name, choice) {
             app["query"] = name
+            app["choice"] = choice
             socket.emit('search', {
                 query: name,
                 choice: choice
