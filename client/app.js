@@ -200,6 +200,5 @@ socket.on('search-successful', result => {
 
 // Alert the usr if no results were found 
 socket.on('no-results-found', result => {
-    console.log(result)
-    alert(`No Results were found for ${app.query}.\nPlease check your spelling and try again.`)
+    alert(`No Results were found for ${app.query}`)
 })
