@@ -61,36 +61,26 @@ const detailComponent = {
         </div>
         <br>
             <div>
-                <table class="table table-bordered">
+                <table class="table table-bordered table-striped">
                     <tbody v-for="(value, key) in json">
                         <tr>
                             <td>{{key}}</td>
                             <td v-if="Array.isArray(value)">
                                 <span v-for="arr in value">
                                     <span v-if="arr.name">
-                                        <table class="table table-bordered">
-                                            <tbody v-for="value1 in value">
-                                                <tr v-for="(value, key) in value1">
-                                                    <td>{{key}}</td>
-                                                    <td>{{value}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        {{arr.name}}
                                     </span>
-                                    <span v-else>{{arr}}&nbsp;&nbsp</span>
+                                    <span v-else>
+                                        {{arr}}&nbsp;&nbsp
+                                    </span>
                                 </span>
                             </td>
                             <td v-else-if="value instanceof Object">
-                                <table class="table table-bordered">
-                                    <tbody v-for="(value, key) in value">
-                                        <tr>
-                                            <td>{{key}}</td>
-                                            <td>{{value}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                {{value.name}}
                             </td>
-                            <td v-else>{{value}}</td>
+                            <td v-else>
+                                {{value}}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -122,7 +112,8 @@ const app = new Vue({
     methods: {
         searchQuery: function () {
             if (!(this.query && this.choice)) {
-                return alert("Select a category to search")
+                return
+
             } else {
                 // Push an element to the history if the query hasn't been added already
                 let notInHistory = true;
@@ -178,7 +169,7 @@ socket.on('search-successful', result => {
     const resultsArr = app.result.results
     
     // Declare a temp obj that will hold a list of names and ids.
-    let tempObj = {
+    const tempObj = {
         names: [],
         ids: []
     }
