@@ -148,15 +148,15 @@ socket.on('found', json_object => {
         path = json_object.poster_path
         json_object.poster_path="https://image.tmdb.org/t/p/original"+ path
     }
-    if(json_object.logo_path){
+    else if(json_object.logo_path){
         path = json_object.logo_path
         json_object.logo_path="https://image.tmdb.org/t/p/original"+ path
     }
-    if(json_object.backdrop_path){
+    else if(json_object.backdrop_path){
         path = json_object.backdrop_path
         json_object.backdrop_path ="https://image.tmdb.org/t/p/original"+ path
     }
-    if(json_object.profile_path){
+    else if(json_object.profile_path){
         path = json_object.profile_path
         json_object.profile_path ="https://image.tmdb.org/t/p/original"+ path
     }
